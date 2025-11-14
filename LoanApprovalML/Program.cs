@@ -8,14 +8,15 @@ namespace LoanApprovalML
     {
         static void Main(string[] args)
         {
-            var trainer = new Trainer();
-            trainer.Train("data.csv");
 
-            Console.WriteLine("Do you want to test the saved model? (yes/no)");
-            var answer = Console.ReadLine()?.ToLower();
+            Console.WriteLine("choose one option out of the following: \n enter 1 to Train and test the model \n enter 2 to Create a visualization diagram \n enter any other key to Exit program");
+            int answer = int.Parse(Console.ReadLine() ?? "0");
 
-            if (answer == "yes")
+            if (answer == 1)
             {
+                var trainer = new Trainer();
+                trainer.Train("data.csv");
+
                 var mlContext = new MLContext();
                 // Load the saved model
                 ITransformer loadedModel = mlContext.Model.Load("model.zip", out var schema);
@@ -38,8 +39,14 @@ namespace LoanApprovalML
                     Console.WriteLine($"Loan for {sample.JobType} earning {sample.MonthlyIncome} -> Approved: {prediction.Prediction}, Probability: {prediction.Probability:P2}");
                 }
             }
+            else if (answer == 2)
+            {
+                var diagram = new Diagram();
+                diagram.DrawApprovalDiagram();
+            }
             else
             {
+
                 Console.WriteLine("Exiting program.");
             }
         }
