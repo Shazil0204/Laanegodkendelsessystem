@@ -1,2 +1,6 @@
 LoanApprovalML/obj/
 LoanApprovalML/bin/
+LoanApprovalAPI/obj/
+LoanApprovalAPI/bin/
+LoanApprovalAPI/appsettings.Development.json
+LoanApprovalAPI/appsettings.json
