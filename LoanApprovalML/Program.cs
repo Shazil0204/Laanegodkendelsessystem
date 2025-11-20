@@ -1,54 +1,90 @@
-﻿using LoanApprovalML.DataModels;
-using LoanApprovalML.Services;
-using Microsoft.ML;
+﻿using LoanApprovalML.Services;
 
 namespace LoanApprovalML
 {
+    /// <summary>
+    /// Main program class - This is the entry point of our Loan Approval System.
+    /// Think of this as the front door of our digital bank that welcomes users
+    /// and directs them to the right services.
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
         {
+            // Welcome the user to our loan approval system
+            Console.WriteLine("🏦 Welcome to the AI-Powered Loan Approval System!");
+            Console.WriteLine("This system helps evaluate loan applications using artificial intelligence.\n");
 
-            Console.WriteLine("choose one option out of the following: \n enter 1 to Train and test the model \n enter 2 to Create a visualization diagram \n enter any other key to Exit program");
-            int answer = int.Parse(Console.ReadLine() ?? "0");
+            // Create our menu manager - this handles all user interactions
+            var menuManager = new MenuManager();
+            bool continueRunning = true;
 
-            if (answer == 1)
+            // Main program loop - keeps running until user chooses to exit
+            while (continueRunning)
             {
-                var trainer = new Trainer();
-                trainer.Train("data.csv");
-
-                var mlContext = new MLContext();
-                // Load the saved model
-                ITransformer loadedModel = mlContext.Model.Load("model.zip", out var schema);
-
-                // Create prediction engine
-                var predEngine = mlContext.Model.CreatePredictionEngine<InputData, ModelOutput>(loadedModel);
-
-                // Dummy test data
-                var testSamples = new InputData[]
+                try
                 {
-                    new InputData { MonthlyIncome = 4000, LoanAmount = 10000, ReturnTime = 24, Age = 30, JobType = "Full-time" },
-                    new InputData { MonthlyIncome = 2000, LoanAmount = 5000, ReturnTime = 36, Age = 22, JobType = "Student" },
-                    new InputData { MonthlyIncome = 6000, LoanAmount = 20000, ReturnTime = 12, Age = 40, JobType = "Part-time" },
-                    new InputData { MonthlyIncome = 60, LoanAmount = 200000, ReturnTime = 120, Age = 100, JobType = "Part-time" }
-                };
+                    // Show the main menu and get user's choice
+                    menuManager.ShowMainMenu();
+                    int userChoice = menuManager.GetUserChoice();
 
-                foreach (var sample in testSamples)
+                    // Handle the user's choice
+                    switch (userChoice)
+                    {
+                        case 1:
+                            // Train a new AI model
+                            menuManager.TrainModel();
+                            break;
+
+                        case 2:
+                            // Test the AI with a loan application
+                            menuManager.TestLoanApplication();
+                            break;
+
+                        case 3:
+                            // Create a visualization diagram
+                            menuManager.CreateVisualization();
+                            break;
+
+                        case 4:
+                            // Exit the program
+                            continueRunning = false;
+                            Console.WriteLine("\n👋 Thank you for using the Loan Approval System!");
+                            Console.WriteLine("Have a great day!");
+                            break;
+
+                        default:
+                            // This shouldn't happen due to validation, but just in case
+                            Console.WriteLine("⚠️  Invalid option selected. Please try again.");
+                            break;
+                    }
+
+                    // Ask if user wants to continue (except when exiting)
+                    if (continueRunning && userChoice != 4)
+                    {
+                        continueRunning = menuManager.AskToContinue();
+                        
+                        if (!continueRunning)
+                        {
+                            Console.WriteLine("\n👋 Thank you for using the Loan Approval System!");
+                            Console.WriteLine("Have a great day!");
+                        }
+                    }
+                }
+                catch (Exception ex)
                 {
-                    var prediction = predEngine.Predict(sample);
-                    Console.WriteLine($"Loan for {sample.JobType} earning {sample.MonthlyIncome} -> Approved: {prediction.Prediction}, Probability: {prediction.Probability:P2}");
+                    // Handle any unexpected errors gracefully
+                    Console.WriteLine($"\n❌ An unexpected error occurred: {ex.Message}");
+                    Console.WriteLine("The program will continue running. Please try again.");
+                    
+                    // Ask if they want to continue after an error
+                    continueRunning = menuManager.AskToContinue();
                 }
             }
-            else if (answer == 2)
-            {
-                var diagram = new Diagram();
-                diagram.DrawApprovalDiagram();
-            }
-            else
-            {
 
-                Console.WriteLine("Exiting program.");
-            }
+            // Give the user a moment to read final messages before closing
+            Console.WriteLine("\nPress any key to close the program...");
+            Console.ReadKey();
         }
     }
 }
