@@ -90,24 +90,11 @@ namespace LoanApprovalML.Services
                 rejectedScatter.MarkerSize = 8;                              // Make dots easy to see
             }
 
-            // Step 5: Calculate and draw the decision boundary line
-            // This shows exactly where our AI changes its mind from "approve" to "reject"
-            var boundaryPoints = CalculateDecisionBoundary(predEngine, samples);
-            
-            if (boundaryPoints.Count > 1)  // Need at least 2 points to draw a line
-            {
-                var boundaryX = boundaryPoints.Select(p => p.x).ToArray();  // X-coordinates of boundary
-                var boundaryY = boundaryPoints.Select(p => p.y).ToArray();  // Y-coordinates of boundary
-                
-                var boundaryLine = plt.Add.Scatter(boundaryX, boundaryY);
-                boundaryLine.Color = ScottPlot.Colors.Blue;          // Blue line for decision boundary
-                boundaryLine.LegendText = "Decision Boundary";       // Label for legend
-                boundaryLine.LineWidth = 3;                          // Make line thick and visible
-                boundaryLine.MarkerSize = 0;                         // No dots, just a smooth line
-            }
+            // Step 5: Decision boundary line removed per user request
+            // Now showing only the approved (green) and rejected (red) data points
 
             // Step 6: Make our graph look professional with labels and titles
-            plt.Title("Loan Approval Predictions with Decision Boundary");  // Main title
+            plt.Title("Loan Approval Predictions");                        // Main title (removed "with Decision Boundary")
             plt.Axes.Bottom.Label.Text = "Loan Amount";                     // X-axis label
             plt.Axes.Left.Label.Text = "Monthly Income";                    // Y-axis label
             plt.ShowLegend();                                               // Show the color-coded legend
